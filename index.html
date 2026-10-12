@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lushin SEIA Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #ffffff;
+  --card: #f4f5f7;
+  --input-bg: #ffffff;
+  --border: #d8dce5;
+  --accent: #0067b1;
+  --accent-dim: rgba(0, 103, 177, 0.08);
+  --accent-glow: rgba(0, 103, 177, 0.15);
+  --navy: #1b2838;
+  --text: #1b2838;
+  --text-dim: #6b7a8d;
+  --white: #ffffff;
+  --shadow: 0 2px 12px rgba(27, 40, 56, 0.06);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Open Sans', Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.calc {
+  width: 100%;
+  max-width: 552px;
+  margin: 0 auto;
+  padding: 2rem 16px 3rem;
+  animation: fadeUp 0.5s ease-out;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.header { text-align: center; margin-bottom: 2rem; }
+
+.logo-text {
+  font-size: 1.7rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--navy);
+}
+
+.logo-text span { color: var(--accent); }
+
+.step-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  margin: 0 0 0.6rem 0.25rem;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 2rem;
+  box-shadow: var(--shadow);
+  margin-bottom: 2rem;
+}
+
+.input-group { margin-bottom: 1.5rem; }
+
+.input-group label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--navy);
+  margin-bottom: 0.5rem;
+}
+
+.input-wrap input {
+  width: 100%;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.9rem 1.1rem;
+  font-family: inherit;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--navy);
+  text-align: center;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-variant-numeric: tabular-nums;
+}
+
+.input-wrap input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.result {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.5rem;
+  text-align: center;
+  animation: pop 0.3s ease-out;
+}
+
+@keyframes pop {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.result .total-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  margin-bottom: 0.2rem;
+}
+
+.result .total {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--navy);
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+
+.result .per {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  margin-top: 0.35rem;
+  font-weight: 500;
+}
+
+.result .per span { color: var(--accent); font-weight: 700; }
+
+.empty-state {
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  padding: 0.25rem 0 0.5rem;
+}
+
+/* Line items */
+.breakdown {
+  margin-top: 1.1rem;
+  border-top: 1px solid var(--border);
+  padding-top: 0.6rem;
+  text-align: left;
+}
+
+.breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0;
+}
+
+.breakdown-row .label { font-size: 0.85rem; font-weight: 600; color: var(--navy); }
+.breakdown-row .detail { font-size: 0.75rem; font-weight: 500; color: var(--text-dim); margin-top: 0.1rem; }
+.breakdown-row .detail em { font-style: normal; color: var(--accent); font-weight: 700; }
+.breakdown-row .value { font-size: 0.95rem; font-weight: 700; color: var(--navy); white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+/* Assumptions */
+details.assume { margin-top: 1.25rem; }
+
+details.assume summary {
+  list-style: none;
+  cursor: pointer;
+  text-align: center;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  padding: 0.4rem;
+}
+
+details.assume summary::-webkit-details-marker { display: none; }
+details.assume summary::after { content: ' +'; }
+details.assume[open] summary::after { content: ' \2013'; }
+details.assume summary:hover { color: var(--accent); }
+
+.a-rows { display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.6rem; }
+
+.a-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--white);
+}
+
+.a-row { align-items: center; }
+.a-row label { font-size: 0.78rem; font-weight: 600; color: var(--text-dim); }
+
+.a-row input {
+  width: 7.5rem;
+  flex-shrink: 0;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.5rem 0.6rem;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--navy);
+  text-align: right;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-variant-numeric: tabular-nums;
+}
+
+.a-row input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.reset {
+  display: block;
+  margin: 0.75rem auto 0;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 0.4rem;
+}
+
+.reset:hover { color: var(--accent); }
+
+/* Steps: one screen at a time */
+.step[hidden] { display: none !important; }
+.step { animation: fadeUp 0.35s ease-out; }
+
+.progress {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 1.25rem;
+}
+
+.progress span {
+  flex: 1;
+  height: 5px;
+  border-radius: 99px;
+  background: var(--border);
+  transition: background 0.3s;
+}
+
+.progress span.done { background: var(--accent); }
+
+.step .card { margin-bottom: 1.25rem; }
+
+.btn-next {
+  display: block;
+  width: 100%;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #ffffff;
+  background: linear-gradient(135deg, #0067b1, #0a85d9);
+  border: none;
+  border-radius: 12px;
+  padding: 1.15rem 1rem;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 103, 177, 0.28);
+  transition: transform 0.15s, box-shadow 0.2s, opacity 0.2s;
+}
+
+.btn-next:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(0, 103, 177, 0.34); }
+.btn-next:disabled { opacity: 0.35; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.btn-back {
+  display: block;
+  margin: 0.9rem auto 0;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.btn-back:hover { color: var(--accent); }
+
+/* ROI card */
+.roi .result { border-color: var(--accent); box-shadow: 0 0 14px var(--accent-glow); }
+.roi .result .total { color: var(--accent); }
+
+@media (max-width: 420px) {
+  .card { padding: 1.4rem; }
+  .result .total { font-size: 2.1rem; }
+}
+
+@media (prefers-reduced-motion: reduce) { .calc, .result { animation: none; } }
+</style>
+</head>
+<body>
+<div class="calc">
+  <div class="header">
+    <div class="logo-text">SEIA CALCULATOR<span>.</span></div>
+  </div>
+
+  <div class="progress" aria-hidden="true"><span></span><span></span><span></span></div>
+
+  <!-- Step 1: cost of underperformers -->
+  <div class="step" data-step="1">
+  <div class="step-label">Step 1 of 3: Cost of your underperformers</div>
+  <section class="card">
+    <div class="input-group">
+      <label for="u_num">Number of underperformers</label>
+      <div class="input-wrap"><input id="u_num" type="text" inputmode="numeric" placeholder="0" autocomplete="off"></div>
+    </div>
+    <div class="input-group">
+      <label for="u_sal">Average salary</label>
+      <div class="input-wrap"><input id="u_sal" type="text" inputmode="numeric" placeholder="$0" autocomplete="off" data-money></div>
+    </div>
+
+    <div class="result" id="u_result" aria-live="polite" hidden>
+      <div class="total-label">Cost of Your Underperformers</div>
+      <div class="total" id="u_total">$0</div>
+      <div class="per"><span id="u_one">$0</span> per underperformer</div>
+    </div>
+    <div class="empty-state" id="u_empty">Type a number above to calculate</div>
+
+    <details class="assume">
+      <summary>Assumptions</summary>
+      <div class="a-rows">
+        <div class="a-row"><label for="a_hours">Training and coaching hours</label><input id="a_hours" type="text" inputmode="numeric" autocomplete="off" data-key="coachingHours"></div>
+        <div class="a-row"><label for="a_rate">Value of a manager's hour</label><input id="a_rate" type="text" inputmode="numeric" autocomplete="off" data-key="hourlyRate" data-money></div>
+        <div class="a-row"><label for="a_opp">Lost revenue per opportunity</label><input id="a_opp" type="text" inputmode="numeric" autocomplete="off" data-key="lostPerOpp" data-money></div>
+        <div class="a-row"><label for="a_peryear">Lost opportunities per year</label><input id="a_peryear" type="text" inputmode="numeric" autocomplete="off" data-key="lostPerYear"></div>
+        <div class="a-row"><label for="a_years">Years on the team</label><input id="a_years" type="text" inputmode="numeric" autocomplete="off" data-key="years"></div>
+      </div>
+      <button type="button" class="reset" id="a_reset">Reset assumptions</button>
+    </details>
+  </section>
+  <button type="button" class="btn-next" data-next="2" id="next1" disabled>Next</button>
+  </div>
+
+  <!-- Step 2: SEIA investment -->
+  <div class="step" data-step="2" hidden>
+  <div class="step-label">Step 2 of 3: SEIA investment</div>
+  <section class="card">
+    <div class="input-group">
+      <label for="s_num">Number of people to evaluate</label>
+      <div class="input-wrap"><input id="s_num" type="text" inputmode="numeric" placeholder="0" autocomplete="off"></div>
+    </div>
+
+    <div class="result" id="s_result" aria-live="polite" hidden>
+      <div class="total-label">Total Investment</div>
+      <div class="total" id="s_total">$0</div>
+      <div class="breakdown" id="s_breakdown"></div>
+    </div>
+    <div class="empty-state" id="s_empty">Type a number above to calculate</div>
+  </section>
+  <button type="button" class="btn-next" data-next="3" id="next2" disabled>Next</button>
+  <button type="button" class="btn-back" data-back="1">Back</button>
+  </div>
+
+  <!-- Step 3: return -->
+  <div class="step" data-step="3" hidden>
+  <div class="step-label">Step 3 of 3: Return on investment</div>
+  <section class="card roi">
+    <div class="result" id="r_result" aria-live="polite" hidden>
+      <div class="total-label">Return on Investment</div>
+      <div class="total" id="r_multiple">0x</div>
+      <div class="per">Your underperformers cost <span id="r_multiple_text">0x</span> the SEIA investment</div>
+      <div class="breakdown" id="r_breakdown"></div>
+    </div>
+    <div class="empty-state" id="r_empty">Fill in Steps 1 and 2 to see your return</div>
+  </section>
+  <button type="button" class="btn-back" data-back="2">Back</button>
+  <button type="button" class="btn-back" id="startOver">Start over</button>
+  </div>
+</div>
+
+<script>
+// ---- UNDERPERFORMER ASSUMPTIONS ----------------------------------------
+// Starting values for the Assumptions section. Anyone using the page can
+// change them there; "Reset assumptions" puts these values back.
+const DEFAULT_SALARY = 95000;
+
+const UNDER = {
+  coachingHours: 100,     // hours of training and coaching per underperformer
+  hourlyRate: 750,        // value of a manager's hour
+  lostPerOpp: 20000,      // revenue per lost account or opportunity
+  lostPerYear: 2,         // lost accounts or opportunities per year
+  years: 2                // average years an underperformer has worked
+};
+
+// ---- SEIA PRICING ----------------------------------------------------
+// SEIA Findings Report & Dashboards: one flat fee for the whole group.
+const REPORT_FEE = 3600;
+
+// Evaluation rate: one rate for everyone in the group.
+// Starts at START_RATE for 1 person, drops by STEP for each added
+// person, and never goes below FLOOR_RATE.
+const START_RATE = 560;
+const STEP = 2;
+const FLOOR_RATE = 400;
+// -----------------------------------------------------------------------
+
+const money = v => '$' + Math.round(v).toLocaleString('en-US');
+const val = id => parseFloat(String(document.getElementById(id).value).replace(/[^0-9.]/g, '')) || 0;
+const $ = id => document.getElementById(id);
+
+const assumeInputs = Array.from(document.querySelectorAll('.a-row input'));
+const A = key => val(assumeInputs.find(el => el.dataset.key === key).id);
+
+const underPerPerson = salary =>
+  A('coachingHours') * A('hourlyRate') + salary + A('lostPerOpp') * A('lostPerYear') * A('years');
+
+const rateFor = n => Math.max(FLOOR_RATE, START_RATE - STEP * (n - 1));
+const seiaTotal = n => REPORT_FEE + n * rateFor(n);
+
+function bRow(label, detail, value) {
+  return '<div class="breakdown-row">' +
+           '<div><div class="label">' + label + '</div>' +
+           (detail ? '<div class="detail">' + detail + '</div>' : '') + '</div>' +
+           '<div class="value">' + value + '</div>' +
+         '</div>';
+}
+
+const fmt = (el, n) => el.hasAttribute('data-money') ? money(n) : n.toLocaleString('en-US');
+
+function resetAssumptions() {
+  assumeInputs.forEach(el => { el.value = fmt(el, UNDER[el.dataset.key]); });
+}
+
+function formatMultiple(x) {
+  return (x >= 10 ? Math.round(x).toLocaleString('en-US') : x.toFixed(1)) + 'x';
+}
+
+function calc() {
+  // Step 1
+  const uNum = val('u_num');
+  const one = underPerPerson(val('u_sal'));
+  const uTotal = one * uNum;
+  $('u_one').textContent = money(one);
+  $('u_total').textContent = money(uTotal);
+  $('u_result').hidden = uNum <= 0;
+  $('u_empty').hidden = uNum > 0;
+
+  // Step 2
+  const sNum = Math.floor(val('s_num'));
+  let sTotal = 0;
+  if (sNum > 0) {
+    const rate = rateFor(sNum);
+    sTotal = seiaTotal(sNum);
+    $('s_total').textContent = money(sTotal);
+    $('s_breakdown').innerHTML =
+      bRow('SEIA Findings Report &amp; Dashboards', 'Flat fee for the whole group', money(REPORT_FEE)) +
+      bRow('Evaluations',
+           sNum.toLocaleString('en-US') + (sNum === 1 ? ' person' : ' people') + ' &times; <em>' + money(rate) + '</em>',
+           money(sNum * rate));
+  }
+  $('s_result').hidden = sNum <= 0;
+  $('s_empty').hidden = sNum > 0;
+
+  // Step 3
+  const ready = uTotal > 0 && sTotal > 0;
+  if (ready) {
+    const multiple = uTotal / sTotal;
+    const breakEven = Math.max(1, Math.ceil(sTotal / one));
+    $('r_multiple').textContent = formatMultiple(multiple);
+    $('r_multiple_text').textContent = formatMultiple(multiple);
+    $('r_breakdown').innerHTML =
+      bRow('Cost of your underperformers', null, money(uTotal)) +
+      bRow('SEIA investment', null, money(sTotal)) +
+      bRow('Underperformers to fix to break even', null,
+           breakEven.toLocaleString('en-US'));
+  }
+  $('r_result').hidden = !ready;
+  $('r_empty').hidden = ready;
+
+  $('next1').disabled = !(uNum > 0);
+  $('next2').disabled = !(sNum > 0);
+}
+
+// ---- Step navigation (#step1, #step2, #step3) ----
+const steps = Array.from(document.querySelectorAll('.step'));
+const bars = Array.from(document.querySelectorAll('.progress span'));
+let current = 1;
+
+function canReach(n) {
+  if (n >= 2 && $('next1').disabled) return false;
+  if (n >= 3 && $('next2').disabled) return false;
+  return true;
+}
+
+function go(n, pushHash) {
+  n = Math.min(3, Math.max(1, n || 1));
+  while (n > 1 && !canReach(n)) n--;
+  current = n;
+  steps.forEach(s => { s.hidden = +s.dataset.step !== n; });
+  bars.forEach((b, i) => b.classList.toggle('done', i < n));
+  if (pushHash) { try { history.replaceState(null, '', '#step' + n); } catch (e) {} }
+  window.scrollTo(0, 0);
+  const first = { 1: 'u_num', 2: 's_num' }[n];
+  if (first) { try { $(first).focus({ preventScroll: true }); } catch (e) {} }
+}
+
+document.querySelectorAll('[data-next]').forEach(b =>
+  b.addEventListener('click', () => go(+b.dataset.next, true)));
+document.querySelectorAll('[data-back]').forEach(b =>
+  b.addEventListener('click', () => go(+b.dataset.back, true)));
+
+$('startOver').addEventListener('click', () => {
+  $('u_num').value = '';
+  $('s_num').value = '';
+  $('u_sal').value = money(DEFAULT_SALARY);
+  resetAssumptions();
+  calc();
+  go(1, true);
+});
+
+// Enter moves forward when the step is filled in
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const btn = { 1: $('next1'), 2: $('next2') }[current];
+  if (btn && !btn.disabled) { e.preventDefault(); btn.click(); }
+});
+
+window.addEventListener('hashchange', () => go(parseInt(location.hash.replace('#step', ''), 10), false));
+
+$('u_sal').value = money(DEFAULT_SALARY);
+resetAssumptions();
+
+document.querySelectorAll('input').forEach(el => {
+  el.addEventListener('input', () => {
+    const digits = el.value.replace(/[^0-9]/g, '');
+    el.value = digits ? fmt(el, +digits) : '';
+    calc();
+  });
+});
+
+$('a_reset').addEventListener('click', () => { resetAssumptions(); calc(); });
+
+calc();
+go(parseInt(location.hash.replace('#step', ''), 10) || 1, false);
+</script>
+</body>
+</html>
