@@ -319,10 +319,35 @@ details.assume summary:hover { color: var(--accent); }
 }
 
 @media (prefers-reduced-motion: reduce) { .calc, .result { animation: none; } }
+
+/* Site tabs */
+.site-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1.75rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2rem;
+}
+.site-tabs a {
+  font-family: inherit;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  text-decoration: none;
+  padding: 0.25rem 0.1rem 0.7rem;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.2s, border-color 0.2s;
+}
+.site-tabs a:hover { color: var(--navy); }
+.site-tabs a.active { color: var(--accent); border-bottom-color: var(--accent); }
 </style>
 </head>
 <body>
 <div class="calc">
+  <nav class="site-tabs"><a href="../index.html">Calculator</a><a href="../roi/index.html" class="active">ROI</a><a href="../rollout/index.html">Rollout</a></nav>
   <div class="header">
     <div class="logo-text">SEIA CALCULATOR<span>.</span></div>
   </div>
@@ -331,7 +356,7 @@ details.assume summary:hover { color: var(--accent); }
 
   <!-- Step 1: cost of underperformers -->
   <div class="step" data-step="1">
-  <div class="step-label">Step 1 of 3: Cost of your underperformers</div>
+  <div class="step-label">Step 1 of 3: Cost of underperformers</div>
   <section class="card">
     <div class="input-group">
       <label for="u_num">Number of underperformers</label>
@@ -343,7 +368,7 @@ details.assume summary:hover { color: var(--accent); }
     </div>
 
     <div class="result" id="u_result" aria-live="polite" hidden>
-      <div class="total-label">Cost of Your Underperformers</div>
+      <div class="total-label">Cost of Underperformers</div>
       <div class="total" id="u_total">$0</div>
       <div class="per"><span id="u_one">$0</span> per underperformer</div>
     </div>
@@ -492,7 +517,7 @@ function calc() {
     $('r_multiple').textContent = formatMultiple(multiple);
     $('r_multiple_text').textContent = formatMultiple(multiple);
     $('r_breakdown').innerHTML =
-      bRow('Cost of your underperformers', null, money(uTotal)) +
+      bRow('Cost of underperformers', null, money(uTotal)) +
       bRow('SEIA investment', null, money(sTotal)) +
       bRow('Underperformers to fix to break even', null,
            breakEven.toLocaleString('en-US'));
